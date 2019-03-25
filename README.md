@@ -13,10 +13,14 @@ Here we listen to this world exploring the linear piano.
 
 ### Uses
 
-python 2
-matplotlib
-scipy
-numpy
-scikits.audiolab
+* python 2
+
+* matplotlib
+
+* scipy
+
+* numpy
+
+* scikits.audiolab
 
 See requiremets.txt for the versions used.
