@@ -2,7 +2,7 @@
 
 ## A world without logarithms
 
-$y = \log _b (x)$, answers the question: to what power $y$ do I have to raise a basis $b$ to get $x$. 
+$y = \log _b (x)$, answers the question to what power $y$ do I have to raise a basis $b$ to get $x$. 
 
 Although the action of the logarithm is somewhat cumbersome, this does not prevent the function from appearing in many natural phenomena.  
 Loudness, pitch, the strength of earthquakes are all measured in logarithmic scales. 
