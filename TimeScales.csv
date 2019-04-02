@@ -1,0 +1,12 @@
+activity,time,units,multiplicative facrtor,time(days)
+Had breakfast,8,hours,0.04166666667,0.33333333336
+Went to bed,12,hours,0.04166666667,0.50000000004
+Christmas,3,months,30,90
+Last swim,6,months,30,180
+I was born,33,years,365,12045
+Mother was born,65,years,365,23725
+Grandmother was born,100,years,365,36500
+Europeans arrived in America,500,years,365,182500
+Jesus was born,2000,years,365,730000
+Writing was developed in America ,2300,years,366,841800
+Writing was developed in Eurasia ,5000,years,367,1835000
