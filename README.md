@@ -23,4 +23,11 @@ Here we listen to this world exploring the linear piano.
 
 * scikits.audiolab
 
+* ipywidgets
+
 See requiremets.txt for the versions used.
+
+
+### TODO
+
+Add note duration,  add songs, guitar and piano synthesisers. 
