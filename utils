@@ -1,0 +1,103 @@
+fs = 44100  # sampling rate Hz
+
+
+### building blocks
+
+def sinewave(freq, time):
+    """Creates sine wave"""
+    y = np.sin(2 * np.pi * freq * time)
+    w = signal.tukey(len(y))  # window the signal
+    return y * w
+
+
+def time_arr(tf, fs):
+    """creates a time array fiven the sampling rate fs"""
+    return np.linspace(0, tf, fs * tf)
+
+
+def _round2int(x):
+    return int(np.round(x))
+
+
+round2int = np.vectorize(_round2int)
+
+
+def playwave(f, tf=1):
+    """plays sine wave with frequency f and duration tf"""
+    t = time_arr(tf, fs)
+    y = sinewave(f, t)
+    al.play(y, fs=fs)
+
+
+#### pitch and music theory
+
+def key2frequency(n_key):
+    """Returns the piano key given the frequency"""
+    return 440. * 2. ** ((n_key - 49.) / 12.)
+
+
+keys2frequencies = np.vectorize(key2frequency)
+
+
+def frequency2key(n_key):
+    """Returns the frequency of the n-th key"""
+    return 12. * np.log2(f / 440.) + 49.
+
+
+frequencies2keys = np.vectorize(frequency2key)
+
+
+def linear_piano_key2frequency(n_key):
+    """Simulates the frequencies of a piano with linear intervals between notes
+    Calibrate linear piano with A440, A880"""
+    f = 440. / 12. * n_key + 440. * (1. - 49. / 12.)
+    return f
+
+
+linear_piano_keys2frequencies = np.vectorize(linear_piano_key2frequency)
+
+
+## Music theory
+
+def majorScaleKeys(n0=49, n_octaves=1):
+    """Returns the keys of the major scale starting at n0
+    TODO: generalise to more than one octave"""
+    intervals = np.array([2, 2, 1, 2, 2, 2, 1])
+    intervals_from_key = np.cumsum(intervals)
+    keys = np.hstack((np.array([n0]), n0 + intervals_from_key))
+    return keys
+
+
+def majorScaleFreqs(n0=49, n_octaves=1):
+    """Returns the frequencies of the major starting at the n0-th key"""
+    keys = majorScaleKeys(n0=n0, n_octaves=n_octaves)
+    return keys2frequencies(keys)
+
+
+def linear_majorScaleFreqs(n0=49, n_octaves=1):
+    """Returns the frequencies of the major starting at the n0-th key"""
+    keys = majorScaleKeys(n0=n0, n_octaves=n_octaves)
+    return linear_piano_key2frequency(keys)
+
+
+def pioanokey2note():
+    """TODO returns notes A A#Bb B..."""
+    return 0
+
+
+def calibrate_piano(note_key1, note_key2):
+    """TODO
+    Simulates the frequencies of a piano with linear intervals between notes
+    Calibrate linear piano with A440, A880
+    TODO note_ket = (key, freq)"""
+    assert isintance(note_key1[0], int)
+    assert isintance(note_key2[0], int)
+    assert isintance(note_key1[1], float)
+    assert isintance(note_key2[1], float)
+    return 0
+    f1, k1 = note_key1
+    f2, k2 = note_key2
+
+    f = (f2 - f1) / (k2 - k1) * n_key + b
+
+    return f
