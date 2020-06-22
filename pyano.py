@@ -21,14 +21,11 @@ def sinewave(freq, time):
 
 
 def harmonic_i2dec(freq, time, n=5):
-    """sine wave with n harmonics
+    """sine wave with n harmonics with quadratic decay
     time: ndarray"""
-    dec = np.arange(i+1)**2
-    y = np.zeros_like(time)
-    for i in np.arange(1, n + 1):
-        y += np.sin(2 * np.pi * freq * i * time) / (i** 2)
-    w = signal.tukey(len(y))  # window the signal
-    return y * w
+    quad_dec = np.arange(1, n+1)**2
+
+    return harmonic(freq, time, n=n, decay=quad_dec)
 
 def harmonic(freq, time, n=5, decay=None):
     """sine wave with n harmonics
@@ -48,7 +45,8 @@ def harmonic(freq, time, n=5, decay=None):
     y = np.zeros_like(time)
 
     for i in np.arange(1, n + 1):
-        y += np.sin(2 * np.pi * freq * i * time)/decay[i-1]
+        y += np.sin(2 * np.pi * freq * i * time) / decay[i-1]
+        #print(decay[i-1])
     w = signal.tukey(len(y))  # window the signal
     return y * w
 
