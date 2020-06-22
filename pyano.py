@@ -74,13 +74,19 @@ def harmonic(freq, time, n=5, decay=None):
     return y * w
 
 
-def experimental_harmony(freqs, time):
-    """sine waves with frquencies specified in freqs
+def experimental_harmony(freqs, time, decay=None):
+    """sine waves with specific in frequencies (freqs)
     freqs: ndarray
+        frequencies of the sine waves
     time: ndarray"""
+    n = len(freqs)
+
+    if decay is None: # no decay of the harmonics
+        decay = np.ones(n)
+
     y = np.zeros_like(time)
     for i, freq in enumerate(freqs):
-        y += np.sin(2 * np.pi * freq * time) / (i** 2)
+        y += np.sin(2 * np.pi * freq * time) / decay[i-1]
     w = signal.tukey(len(y))  # window the signal
     return y * w
 
