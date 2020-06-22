@@ -20,6 +20,29 @@ def sinewave(freq, time):
     return y * w
 
 
+def notesInSeries(freqs, time, synth=None):
+    """play notes with frequencies freqs, each with a duration specified by time
+    freqs: ndarray
+        frequencies of the sine waves
+    time: ndarray
+        time
+    synth: callable
+        wave sythesizer, takes frequency and time
+        default sinewave
+    """
+    if synth is None: # no decay of the harmonics
+        synth = sinewave
+
+    n = len(freqs)
+    m = len(time)
+    y = np.zeros(n*m)
+    print(n, len(y))
+    for i, freq in enumerate(freqs):
+        yi = synth(freq, time)
+        y[i*m:(i+1)*m] = yi
+
+    return y
+
 def harmonic_i2dec(freq, time, n=5):
     """sine wave with n harmonics with quadratic decay
     time: ndarray"""
