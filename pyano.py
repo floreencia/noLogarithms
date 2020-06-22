@@ -50,6 +50,7 @@ def harmonic_i2dec(freq, time, n=5):
 
     return harmonic(freq, time, n=n, decay=quad_dec)
 
+
 def harmonic(freq, time, n=5, decay=None):
     """sine wave with n harmonics
     freq: num
@@ -61,17 +62,9 @@ def harmonic(freq, time, n=5, decay=None):
         Decay of the harmonics
         default None means no decay"""
 
-    if decay is None: # no decay of the harmonics
-        decay = np.ones(n)
+    freqs = freq * np.arange(1, n+1)
 
-    #print(decay)
-    y = np.zeros_like(time)
-
-    for i in np.arange(1, n + 1):
-        y += np.sin(2 * np.pi * freq * i * time) / decay[i-1]
-        #print(decay[i-1])
-    w = signal.tukey(len(y))  # window the signal
-    return y * w
+    return experimental_harmony(freqs, time=time, decay=decay)
 
 
 def experimental_harmony(freqs, time, decay=None):
@@ -86,8 +79,11 @@ def experimental_harmony(freqs, time, decay=None):
 
     y = np.zeros_like(time)
     for i, freq in enumerate(freqs):
-        y += np.sin(2 * np.pi * freq * time) / decay[i-1]
+        y += np.sin(2 * np.pi * freq * time) / decay[i]
+
     w = signal.tukey(len(y))  # window the signal
+    # print(np.isnan(y).any())
+
     return y * w
 
 
