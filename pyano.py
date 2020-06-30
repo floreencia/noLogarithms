@@ -7,11 +7,20 @@ fs = 44100  # sampling rate Hz
 
 ### building blocks
 
-def play(f, fs):
-    """TODO: filter high frequencies or raise error when f > 800 Hz"""
-    # if spectrum(f)
-    return al.play(f, fs)
 
+def time_arr(tf, fs):
+    """creates a time array with duration tf and sampling rate fs"""
+    return np.linspace(0, tf, fs * tf)
+
+
+def _round2int(x):
+    return int(np.round(x))
+
+
+round2int = np.vectorize(_round2int)
+
+
+### Synthesisers
 
 def sinewave(freq, time):
     """Creates sine wave"""
@@ -20,28 +29,11 @@ def sinewave(freq, time):
     return y * w
 
 
-def notesInSeries(freqs, time, synth=None):
-    """play notes with frequencies freqs, each with a duration specified by time
-    freqs: ndarray
-        frequencies of the sine waves
-    time: ndarray
-        time
-    synth: callable
-        wave sythesizer, takes frequency and time
-        default sinewave
-    """
-    if synth is None: # no decay of the harmonics
-        synth = sinewave
+def i2dec(n):
+    """quadratic decay"""
+    return np.arange(1, n+1)**2
 
-    n = len(freqs)
-    m = len(time)
-    y = np.zeros(n*m)
-    print(n, len(y))
-    for i, freq in enumerate(freqs):
-        yi = synth(freq, time)
-        y[i*m:(i+1)*m] = yi
 
-    return y
 
 def harmonic_i2dec(freq, time, n=5):
     """sine wave with n harmonics with quadratic decay
@@ -67,37 +59,12 @@ def harmonic(freq, time, n=5, decay=None):
     return experimental_harmony(freqs, time=time, decay=decay)
 
 
-def experimental_harmony(freqs, time, decay=None):
-    """sine waves with specific in frequencies (freqs)
-    freqs: ndarray
-        frequencies of the sine waves
-    time: ndarray"""
-    n = len(freqs)
+### play
 
-    if decay is None: # no decay of the harmonics
-        decay = np.ones(n)
-
-    y = np.zeros_like(time)
-    for i, freq in enumerate(freqs):
-        y += np.sin(2 * np.pi * freq * time) / decay[i]
-
-    w = signal.tukey(len(y))  # window the signal
-    # print(np.isnan(y).any())
-
-    return y * w
-
-
-def time_arr(tf, fs):
-    """creates a time array with duration tf and sampling rate fs"""
-    return np.linspace(0, tf, fs * tf)
-
-
-def _round2int(x):
-    return int(np.round(x))
-
-
-round2int = np.vectorize(_round2int)
-
+def play(f, fs):
+    """TODO: filter high frequencies or raise error when f > 800 Hz"""
+    # if spectrum(f)
+    return al.play(f, fs)
 
 def playwave(f, tf=1, timber=harmonic):
     """plays sine wave with frequency f and duration tf"""
@@ -105,8 +72,61 @@ def playwave(f, tf=1, timber=harmonic):
     y = timber(f, t)
     al.play(y, fs=fs)
 
+#### Other handy sounds to play
 
-#### pitch and music theory
+def notesInSeries(freqs, time, synth=None):
+    """play notes with frequencies freqs, each with a duration specified by time
+    freqs: ndarray
+        frequencies of the sine waves
+    time: ndarray
+        time
+    synth: callable
+        wave sythesizer, takes frequency and time
+        default sinewave
+    """
+    if synth is None: # no decay of the harmonics
+        synth = sinewave
+
+    n = len(freqs)
+    m = len(time)
+    y = np.zeros(n*m)
+    print(n, len(y))
+    for i, freq in enumerate(freqs):
+        yi = synth(freq, time)
+        y[i*m:(i+1)*m] = yi
+
+    return y
+
+
+def experimental_harmony(freqs, time, decay=None, phase='random'):
+    """sine waves with specific in frequencies (freqs)
+    freqs: ndarray
+        frequencies of the sine waves
+    time: ndarray
+    phase: ndarray
+        None means no phase shift, phase = 0,
+        default 'random' generates random phases"""
+    n = len(freqs)
+
+    if phase is None:
+        phase = np.zeros(n)
+    if phase is 'random':
+        phase = np.random.rand(n)
+
+    if decay is None: # no decay of the harmonics
+        decay = np.ones(n)
+
+    y = np.zeros_like(time)
+    for i, freq in enumerate(freqs):
+        y += np.sin(2 * np.pi * freq * time + phase[i]) / decay[i]
+
+    w = signal.tukey(len(y))  # window the signal
+    # print(np.isnan(y).any())
+
+    return y * w
+
+
+#### frequency, pitch and music theory
 
 def key2frequency(n_key):
     """Returns the frequency given the key number"""
@@ -122,6 +142,28 @@ def frequency2key(n_key):
 
 
 frequencies2keys = np.vectorize(frequency2key)
+
+
+def my_piano_key2frequency_fun(k1, f1, k2, f2):
+    """Returns the linear function of callibrating the
+    piano witth keys k1 and k2 with the respective frequencies
+    f1 and f2
+    Parameters
+    ----------
+    k1, f1: float
+        key, frequency
+        kf1: tuple
+    k2, f2: float
+        key, frequency
+    Returns
+    -------
+    f: float
+        frequency of n_key in the linear piano
+    """
+    b = (f1/f2)**(1/(k1-k2))
+    a = f1/(b**(k1))
+    f = lambda x :  a * b**(x)
+    return f
 
 
 def linear_piano_key2frequency(n_key):
@@ -140,16 +182,52 @@ def linear_piano_key2frequency(n_key):
     return f
 
 
+
+def linear_piano_key2frequency_fun(k1, f1, k2, f2):
+    """Returns the linear function of callibrating the
+    piano witth keys k1 and k2 with the respective frequencies
+    f1 and f2
+    Parameters
+    ----------
+    k1, f1: float
+        key, frequency
+        kf1: tuple
+    k2, f2: float
+        key, frequency
+    Returns
+    -------
+    f: float
+        frequency of n_key in the linear piano
+    """
+    m = (f2 - f1)/(k2 -k1)
+    b = f1 - m * k1
+    f = lambda x :  x * m + b
+    return f
+
+
 linear_piano_keys2frequencies = np.vectorize(linear_piano_key2frequency)
 
 
 ## Music theory
 
+
+major_scale_intervals = np.array([2, 2, 1, 2, 2, 2, 1])
+
+
+def major_scale_of_k(k, n):
+    """Returns the n keys of the major scale starting at K"""
+    keys = np.zeros(n+1)
+    keys[0] = k
+    for i in np.arange(n):
+        keys[i+1] = keys[i] + major_scale_intervals[i%7] - 1
+
+    return keys
+
 def majorScaleKeys(n0=49, n_octaves=1):
     """Returns the keys of the major scale starting at n0
     TODO: generalise to more than one octave"""
-    intervals = np.array([2, 2, 1, 2, 2, 2, 1])
-    intervals_from_key = np.cumsum(intervals)
+    #intervals = np.array([2, 2, 1, 2, 2, 2, 1])
+    intervals_from_key = np.cumsum(major_scale_intervals)
     keys = np.hstack((np.array([n0]), n0 + intervals_from_key))
     return keys
 
@@ -165,6 +243,11 @@ def linear_majorScaleFreqs(n0=49, n_octaves=1):
     keys = majorScaleKeys(n0=n0, n_octaves=n_octaves)
     return linear_piano_key2frequency(keys)
 
+
+def majorScaleFreqsFromFreq(f0=110, n=8):
+    """Returns the frequencies of the major starting at the n0-th key"""
+    keys = majorScaleKeys(n0=n0, n_octaves=n_octaves)
+    return keys2frequencies(keys)
 
 def pioanokey2note():
     """TODO returns notes A A# Bb B..."""
@@ -199,6 +282,13 @@ def note2pianokey(note, octave=None, key=None):
     key2n.update({'Bb': 11, 'Db': 2, 'Eb': 4, 'Gb': 7, 'Ab': 9})
 
     return 3 + 12 * (octave - 1) + key2n[n]
+
+
+def note2F0(note):
+    """Return frequency of the note"""
+    k = note2pianokey(note)
+    f = key2frequency(k)
+    return f
 
 
 def calibrate_piano(note_key1, note_key2):
