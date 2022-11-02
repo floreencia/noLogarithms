@@ -11,21 +11,14 @@ How would a world without logarithms look like?
 
 Here we listen to this world exploring the linear piano. 
 
-### Uses
+### Requirements
 
-* python 2
+python3, matplotlib, scipy, numpy, sounddevice, ipywidgets, pyanito
 
-* matplotlib
+#### Install pyanito
 
-* scipy
-
-* numpy
-
-* scikits.audiolab
-
-* ipywidgets
-
-See requiremets.txt for the versions used.
+1. Clone it from https://github.com/floreencia/pyanito
+2. Create an virtual environment and install it there `pip install -e /path/to/package/pyanito`
 
 
 ### TODO
