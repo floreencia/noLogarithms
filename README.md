@@ -13,7 +13,13 @@ Here we listen to this world exploring the linear piano.
 
 ### Requirements
 
-python3, matplotlib, scipy, numpy, sounddevice, ipywidgets, pyanito
+python3, matplotlib, scipy, numpy, sounddevice, ipywidgets
+
+Install in a virtual environement with pip
+
+`pip install numpy matplotlib jupyterlab scipy ipywidgets sounddevice`
+
+You will also need [pyanito](https://github.com/floreencia/pyanito)
 
 #### Install pyanito
 
