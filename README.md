@@ -29,6 +29,11 @@ You will also need [pyanito](https://github.com/floreencia/pyanito)
 2. Create an virtual environment and install it there `pip install -e /path/to/package/pyanito`
 
 
+<div class="alert alert-block alert-danger">
+<b>Danger:</b> This notebook plays high pitch sounds. When running it, ensure the volume is low and  you’re not wearing headphones.
+</div>
+
+
 ### TODO
 
 Add note duration,  add songs, guitar and piano synthesisers. 
